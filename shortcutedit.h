@@ -1,17 +1,18 @@
 #ifndef SHORTCUTEDIT_H
 #define SHORTCUTEDIT_H
 
-#include <QLineEdit>
+#include <QWidget>
 
 struct QEvent;
 struct QKeyEvent;
 
-class ShortcutEdit : public QLineEdit
+class ShortcutEdit : public QWidget
 {
     Q_OBJECT
 public:
     explicit ShortcutEdit(QWidget *parent = 0);
-    bool event(QEvent*);
+    virtual ~ShortcutEdit();
+    bool eventFilter(QObject *, QEvent *);
 
 signals:
     
