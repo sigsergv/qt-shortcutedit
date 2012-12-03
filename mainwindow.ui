@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>396</width>
-    <height>296</height>
+    <width>394</width>
+    <height>294</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,10 +27,10 @@
    <widget class="ShortcutEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>30</x>
       <y>80</y>
       <width>151</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
    </widget>
@@ -40,7 +40,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>396</width>
+     <width>394</width>
      <height>24</height>
     </rect>
    </property>

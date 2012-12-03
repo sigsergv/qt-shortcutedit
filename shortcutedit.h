@@ -19,7 +19,7 @@ signals:
 public slots:
 
 protected:
-    void handleKeyPress(QKeyEvent*);
+    void handleKeyEvent(QKeyEvent*);
     void resetKeySequence();
 
 private:
