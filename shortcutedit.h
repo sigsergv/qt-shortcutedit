@@ -2,6 +2,7 @@
 #define SHORTCUTEDIT_H
 
 #include <QWidget>
+#include <QKeySequence>
 
 struct QEvent;
 struct QKeyEvent;
@@ -13,10 +14,11 @@ public:
     explicit ShortcutEdit(QWidget *parent = 0);
     virtual ~ShortcutEdit();
     bool eventFilter(QObject *, QEvent *);
+    QKeySequence keySequence() const;
+    void setKeySequence(const QKeySequence &);
 
-signals:
-    
-public slots:
+protected slots:
+    void resetClicked();
 
 protected:
     void handleKeyEvent(QKeyEvent*);

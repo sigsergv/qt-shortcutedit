@@ -10,9 +10,11 @@
 struct ShortcutEdit::Private
 {
     QLineEdit * lineedit;
+    QPushButton * resetButton;
 
     bool emptySequenceReady;
     QList<QString> workingSequence;
+    QKeySequence sequence;
 
     void resetCurrentShortcut();
     QString shortcutRepr();
@@ -30,8 +32,8 @@ struct ShortcutEdit::Private
 void ShortcutEdit::Private::resetCurrentShortcut()
 {
     ctrlMod = altMod = metaMod = shiftMod = finalized = false;
-
     pressedKeys = keyCode = 0;
+    lineedit->setText("");
 }
 
 QString ShortcutEdit::Private::shortcutRepr()
@@ -57,8 +59,9 @@ QString ShortcutEdit::Private::shortcutRepr()
     if (keyCode) {
         QKeySequence seq(keyCode);
         s << seq.toString();
-        qDebug() << "code:" << QString::number(keyCode, 16) << "parsed:" << seq.toString();
+        QKeySequence newSeq(s.join("+"));
 
+        sequence.swap(newSeq);
     }
 
     return s.join(" + ");
@@ -70,9 +73,21 @@ ShortcutEdit::ShortcutEdit(QWidget *parent) :
     p = new Private;
     p->emptySequenceReady = false;
 
-    QLayout * layout = new QVBoxLayout();
+    p->resetButton = new QPushButton(this);
+    p->resetButton->setMaximumWidth(22);
+    p->resetButton->setIcon(QIcon::fromTheme("edit-clear"));
+    p->resetButton->setFocusPolicy(Qt::NoFocus);
+    p->resetButton->setFlat(true);
+    p->resetButton->hide();
+
+    connect( p->resetButton, SIGNAL(clicked()),
+            this, SLOT(resetClicked()) );
+
+    QLayout * layout = new QHBoxLayout();
     p->lineedit = new QLineEdit(this);
+
     layout->addWidget(p->lineedit);
+    layout->addWidget(p->resetButton);
 
     p->lineedit->installEventFilter(this);
 
@@ -99,18 +114,17 @@ void ShortcutEdit::handleKeyEvent(QKeyEvent * e)
         int key = e->key();
         p->keyCode = key;
         p->finalized = true;
-
-        qDebug() << key;
     } else {
         p->keyCode = 0;
     }
 
     p->lineedit->setText(p->shortcutRepr());
+    p->resetButton->show();
 }
 
 void ShortcutEdit::resetKeySequence()
 {
-    qDebug() << "resetKeySequence()";
+    p->resetCurrentShortcut();
 }
 
 bool ShortcutEdit::eventFilter(QObject *obj, QEvent *e)
@@ -143,7 +157,6 @@ bool ShortcutEdit::eventFilter(QObject *obj, QEvent *e)
     }
 
     if (e->type() == QEvent::FocusIn) {
-        qDebug() << "focus in";
         p->resetCurrentShortcut();
         p->emptySequenceReady = true;
     }
@@ -154,4 +167,28 @@ bool ShortcutEdit::eventFilter(QObject *obj, QEvent *e)
     }
 
     return QObject::eventFilter(obj, e);
+}
+
+QKeySequence ShortcutEdit::keySequence() const
+{
+    return p->sequence;
+}
+
+void ShortcutEdit::setKeySequence(const QKeySequence & seq)
+{
+    QString repr = seq.toString();
+    if (repr.isEmpty()) {
+        p->resetButton->hide();
+        return;
+    }
+
+    p->sequence = seq;
+    p->lineedit->setText(repr);
+    p->resetButton->show();
+}
+
+void ShortcutEdit::resetClicked()
+{
+    p->resetCurrentShortcut();
+    p->resetButton->hide();
 }
